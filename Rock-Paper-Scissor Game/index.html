@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock-Paper-Scissors Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .choices {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .choice {
+            font-size: 40px;
+            cursor: pointer;
+            padding: 10px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .choice:hover {
+            border-color: #4CAF50;
+            transform: scale(1.1);
+        }
+        .hands {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 60px;
+            min-height: 80px;
+            position: relative;
+        }
+        .hand-label {
+            font-size: 16px;
+            color: #555;
+        }
+        .hand {
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        #result {
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 20px 0;
+            min-height: 24px;
+        }
+        #score {
+            color: #555;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #game-options {
+            display: none;
+            margin-top: 20px;
+        }
+        #continue-btn {
+            background-color: #2ecc71;
+        }
+        #continue-btn:hover {
+            background-color: #27ae60;
+        }
+        #exit-btn {
+            background-color: #e74c3c;
+        }
+        #exit-btn:hover {
+            background-color: #c0392b;
+        }
+        @keyframes cut {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(20deg) scale(1.2); }
+            50% { transform: rotate(-20deg) scale(1.2); }
+            75% { transform: rotate(20deg) scale(1.2); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        @keyframes crush {
+            0% { transform: translateY(0) scale(1); }
+            25% { transform: translateY(-10px) scale(1.1); }
+            50% { transform: translateY(10px) scale(1.1); }
+            75% { transform: translateY(-10px) scale(1.1); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        @keyframes wrap {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .animate-cut {
+            animation: cut 1s ease-in-out;
+        }
+        .animate-crush {
+            animation: crush 1s ease-in-out;
+        }
+        .animate-wrap {
+            animation: wrap 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rock-Paper-Scissors</h1>
+        <p id="score">Player: 0 | Computer: 0</p>
+        <div class="hands">
+            <div>
+                <span class="hand-label">Player</span>
+                <div id="player-hand" class="hand">✊</div>
+            </div>
+            <div>
+                <span class="hand-label">Computer</span>
+                <div id="computer-hand" class="hand">✊</div>
+            </div>
+        </div>
+        <div class="choices">
+            <span class="choice" onclick="playGame('rock')">✊</span>
+            <span class="choice" onclick="playGame('paper')">✋</span>
+            <span class="choice" onclick="playGame('scissors')">✌</span>
+        </div>
+        <p id="result"></p>
+        <div id="game-options">
+            <button id="continue-btn" onclick="continueGame()">Continue</button>
+            <button onclick="newGame()">New Game</button>
+            <button id="exit-btn" onclick="exitGame()">Exit</button>
+        </div>
+    </div>
+
+    <script>
+        const choices = ['rock', 'paper', 'scissors'];
+        const emojis = { rock: '✊', paper: '✋', scissors: '✌' };
+        let playerScore = 0;
+        let computerScore = 0;
+        const maxScore = 5;
+
+        function getComputerChoice() {
+            return choices[Math.floor(Math.random() * 3)];
+        }
+
+        function determineWinner(playerChoice, computerChoice) {
+            const playerHand = document.getElementById('player-hand');
+            const computerHand = document.getElementById('computer-hand');
+            playerHand.className = 'hand'; // Reset animations
+            computerHand.className = 'hand'; // Reset animations
+
+            if (playerChoice === computerChoice) {
+                return 'It\'s a tie!';
+            }
+            if (playerChoice === 'rock' && computerChoice === 'scissors') {
+                playerHand.className = 'hand animate-crush';
+                playerScore++;
+                return 'You win! 🎉 Rock crushes scissors!';
+            }
+            if (playerChoice === 'paper' && computerChoice === 'rock') {
+                playerHand.className = 'hand animate-wrap';
+                playerScore++;
+                return 'You win! 🎉 Paper wraps rock!';
+            }
+            if (playerChoice === 'scissors' && computerChoice === 'paper') {
+                playerHand.className = 'hand animate-cut';
+                playerScore++;
+                return 'You win! 🎉 Scissors slice paper!';
+            }
+            if (computerChoice === 'rock' && playerChoice === 'scissors') {
+                computerHand.className = 'hand animate-crush';
+                computerScore++;
+                return 'Computer wins! 😢 Rock crushes scissors!';
+            }
+            if (computerChoice === 'paper' && playerChoice === 'rock') {
+                computerHand.className = 'hand animate-wrap';
+                computerScore++;
+                return 'Computer wins! 😢 Paper wraps rock!';
+            }
+            if (computerChoice === 'scissors' && playerChoice === 'paper') {
+                computerHand.className = 'hand animate-cut';
+                computerScore++;
+                return 'Computer wins! 😢 Scissors slice paper!';
+            }
+        }
+
+        function playGame(playerChoice) {
+            if (playerScore >= maxScore || computerScore >= maxScore) return;
+
+            const computerChoice = getComputerChoice();
+            const playerHand = document.getElementById('player-hand');
+            const computerHand = document.getElementById('computer-hand');
+            playerHand.textContent = emojis[playerChoice] || '✊';
+            computerHand.textContent = emojis[computerChoice] || '✊';
+
+            const result = determineWinner(playerChoice, computerChoice);
+            document.getElementById('result').textContent = 
+                `You chose ${playerChoice}. Computer chose ${computerChoice}. ${result}`;
+            document.getElementById('result').style.color = 
+                result.includes('You win') ? '#2ecc71' : result.includes('Computer wins') ? '#e74c3c' : '#555';
+            document.getElementById('score').textContent = 
+                `Player: ${playerScore} | Computer: ${computerScore}`;
+
+            if (playerScore >= maxScore || computerScore >= maxScore) {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.querySelector('.choices').style.display = 'none';
+            document.getElementById('game-options').style.display = 'block';
+            document.getElementById('result').textContent = 
+                playerScore >= maxScore ? 'You won the game! 🎉' : 'Computer won the game! 😢';
+            document.getElementById('player-hand').className = 'hand';
+            document.getElementById('computer-hand').className = 'hand';
+        }
+
+        function continueGame() {
+            document.querySelector('.choices').style.display = 'flex';
+            document.getElementById('game-options').style.display = 'none';
+            document.getElementById('result').textContent = '';
+            document.getElementById('player-hand').className = 'hand';
+            document.getElementById('computer-hand').className = 'hand';
+        }
+
+        function newGame() {
+            playerScore = 0;
+            computerScore = 0;
+            document.getElementById('score').textContent = 'Player: 0 | Computer: 0';
+            document.getElementById('player-hand').textContent = '✊';
+            document.getElementById('player-hand').className = 'hand';
+            document.getElementById('computer-hand').textContent = '✊';
+            document.getElementById('computer-hand').className = 'hand';
+            document.getElementById('result').textContent = '';
+            document.querySelector('.choices').style.display = 'flex';
+            document.getElementById('game-options').style.display = 'none';
+        }
+
+        function exitGame() {
+            document.querySelector('.container').innerHTML = 
+                '<h1>Thanks for Playing!</h1><p>Refresh the page to start a new game.</p>';
+        }
+    </script>
+</body>
+</html>
